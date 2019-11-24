@@ -13,6 +13,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.kohsuke.github.GitHub
+import org.kohsuke.github.GitHubBuilder
 import java.io.File
 import java.lang.Exception
 import java.text.SimpleDateFormat
@@ -45,10 +46,10 @@ open class GitHubTask : DefaultTask() {
             }.let { branchName ->
                 println(">>>> Create PR and update assignee")
                 GitHub.connectUsingOAuth(token)
-                    .getRepository("keithyokoma/gradle_task_sample")
+                    .getRepository("KeithYokoma/gradle_tasks_sample")
                     .createPullRequest(
                         "[CI] Daily merge $branchName into master",
-                        "ci/merge_release_to_master",
+                        branchName,
                         "master",
                         "Daily merge release into master."
                     )
