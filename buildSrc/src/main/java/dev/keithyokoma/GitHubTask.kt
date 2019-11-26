@@ -1,5 +1,6 @@
 package dev.keithyokoma
 
+import com.github.zafarkhaja.semver.Version
 import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.MergeCommand
@@ -32,7 +33,14 @@ open class GitHubTask : DefaultTask() {
         git.lsRemote()
             .setCredentialsProvider(credentialsProvider)
             .call()
-            .last { it.name.contains("release/") }
+            .filter {
+                it.name.contains("release/")
+            }.let {
+                println("$it")
+                it
+            }.sortedBy {
+                Version.valueOf(it.name.replace("refs/heads/release/", ""))
+            }.last { it.name.contains("release/") }
             .let { releaseBranch ->
                 println(">>> Found branch: ${releaseBranch.name}, Create temp branch")
                 val workingBranch = "ci/${releaseBranch.name.replace("refs/heads/release/", "")}_to_master"
@@ -44,7 +52,7 @@ open class GitHubTask : DefaultTask() {
                 println(">>> Merge content of $releaseBranch to $workingBranch")
                 mergeNoFFWithBranch(releaseBranch, workingBranch, git, credentialsProvider)
             }.let { branchName ->
-                println(">>>> Create PR and update assignee")
+                println(">>> Create PR and update assignee")
                 GitHub.connectUsingOAuth(token)
                     .getRepository("KeithYokoma/gradle_tasks_sample")
                     .createPullRequest(

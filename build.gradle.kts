@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:3.5.2")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.60")
     }
 }
 
@@ -29,5 +29,5 @@ tasks.register<MyCustomTask>("myCustomTask") {
 tasks.register<dev.keithyokoma.GitHubTask>("mergeReleaseBranch") {
     group = "Automation Group"
     description = "Merge release branch into master"
-    token = properties["token"] as String? ?: throw IllegalStateException("")
+    token = properties["token"] as String? ?: ""
 }
